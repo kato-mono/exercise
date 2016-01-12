@@ -2,16 +2,16 @@
 <html lang="ja">
 <head>
 	<meta charset="UTF-8">
-	<title>演習1</title>
+	<title>演習2</title>
 	<link rel="author" href="https://github.com/kato-mono">
 </head>
 <body>
-	<article>
+	<article style=" font-size:10pt;">
 
-		<h1>HyperText Markup Language</h1>
+		<h1 style="color:#ff0000; font-size:18pt;">HyperText Markup Language</h1>
 
 		<p>
-			<strong>[概要]</strong>
+			<strong style="color:#0000ff; font-size:12pt;">[概要]</strong>
 			<br>
 			HyperText Markup Language（ハイパーテキスト マークアップ ランゲージ）、
 			略記・略称HTML（エイチティーエムエル）とは、
@@ -24,7 +24,7 @@
 		</p>
 
 		<p>
-			<strong>[特徴]</strong>
+			<strong style="color:#0000ff; font-size:12pt;">[特徴]</strong>
 			<br>
 			HTMLの特徴はハイパーテキストを利用した、相互間文書参照のフレームワークである。
 			マークアップはプレーンテキストの文書を
@@ -39,12 +39,12 @@
 		</p>
 
 
-		<p>
-			<strong>[構造]</strong>
+		<p style="margin-bottom:0px;">
+			<strong style="color:#0000ff; font-size:12pt;">[構造]</strong>
 			<br>
 			このHTML文書は次のような構造を示している。
 		</p>
-		<ul>
+		<ul style="background-color:#aaaaaa; margin-left:45px; margin-top:0px;">
 			<li>html 要素（ルート要素。また、言語コード ja の言語が使われていることの明示）</li>
 			<ul>
 				<li>head 要素（この文書のヘッダ情報の明示）</li>
