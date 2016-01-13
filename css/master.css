@@ -1,23 +1,22 @@
-article {
-	font-size:10pt;
+body {
+	margin: 0;
+	padding: 0;
 }
 
-h1 {
-	color: #ff0000;
-	font-size: 18pt;
+article {
+	font-size: 10pt;
 }
 
 .subhead {
-	color:#0000ff;
 	font-size: 12pt;
 }
 
-.list {
-	background-color:#aaaaaa;
-	margin-left:45px;
-	margin-top:0;
+.row {
+	display:-webkit-flex;
+	display: flex;	/* 2つ以上のパネルの子要素の高さを揃える rowを基準とする */
 }
 
-#bottom_paragraph {
-	margin-bottom: 0;
+.column {
+	display:-webkit-flex;
+	display: flex;	/* 2つ以上のパネルの子要素の高さを揃える rowを基準とする*/
 }
