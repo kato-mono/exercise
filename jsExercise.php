@@ -2,14 +2,11 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>JavaScript演習1</title>
-  <script>
-    function sayHello() {
-      alert('Hello World');
-    }
-  </script>
+  <title>JavaScript演習2</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="/js/jsExercise.js"></script>
 </head>
 <body>
-  <button type="button" name="button" onclick="sayHello();">Say Hello</button>
+  <button id="hello_button" type="button" name="button" onclick="sayHello();">Say Hello</button>
 </body>
 </html>
