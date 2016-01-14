@@ -1,17 +1,58 @@
+/**
+* ページにp要素を設置して文字列を表示する(既に設置してあれば上書きする)
+* 依存するhtml要素：#show_button, #output_label
+*/
+function show(str) {
+  if (document.getElementById('output_label') == null) {
+    $('#show_button').after('<p id="output_label">' + str + '</p>');
+  } else {
+    $('#output_label').text(str);
+  }
+}
+
+/**
+* Datetime形式の文字列をページ内に表示する
+*/
+function showDatetime(url) {
+  try {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+
+    request.onload = function(e) {
+      if (request.status === 200) {
+        show(request.responseText);
+      } else {
+        alert('error. status: ' + request.statusText);
+      }
+    };
+
+    request.onerror = function(e) {
+      alert('error. status: ' + request.statusText);
+    };
+
+    request.send(null);
+
+  } catch (e) {
+    alert('exception: ' + e.stack);
+  } finally {
+    return false;
+  }
+}
+
+/**
+* テキストボックスに入力された値をページ内に表示する
+* 依存するhtml要素：input[name=input_text]
+*/
 function showText() {
   try {
     var input = escapeSequence($('input[name=input_text]').val());
 
-    if (document.getElementById('output_label') == null) {
-      $('#show_button').after('<p id="output_label">' + input + '</p>');
-    } else {
-      $('#output_label').text(input);
-    }
+    show(input);
 
     $('input[name=input_text]').val('');
 
   } catch (e) {
-    alert('[exception]: ' + e.stack);
+    alert('exception: ' + e.stack);
   } finally {
     return false;
   }
