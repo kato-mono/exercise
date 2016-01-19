@@ -6,5 +6,14 @@
  */
 
 return array(
+  'active' => 'default',
 
+  'default' => array(
+    'type' => 'pdo',
+    'identifier' => '`',
+    'table_prefix' => '',
+    'charset' => 'utf8',
+    'enable_cache' => false,
+    'profiling' => false,
+  ),
 );
