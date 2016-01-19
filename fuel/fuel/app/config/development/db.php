@@ -6,9 +6,9 @@
 return array(
 	'default' => array(
 		'connection'  => array(
-			'dsn'        => 'mysql:host=localhost;dbname=fuel_dev',
+			'dsn'        => 'mysql:host=exercise.ckhgzm54rwtv.ap-northeast-1.rds.amazonaws.com;dbname=ensyu',
 			'username'   => 'root',
-			'password'   => 'root',
+			'password'   => 'Ws6qJTFZ',
 		),
 	),
 );
