@@ -8,14 +8,14 @@ class Controller_Todo extends Controller
   public function action_main()
   {
     // タスクリスト描画部を構築する
-    $task_list = array();
+    $task_list = [];
     $result = Model_Todo::select_all();
     foreach ($result as $item) {
       $task_list[] = $this->construct_task($item['id'], $item['status'], $item['description']);
     }
 
-    $view = View::forge('todo');
-    $view->set('task_list', $task_list);
+    $view = View::forge('todo')
+      ->set('task_list', $task_list);
     return $view;
   }
 
@@ -68,14 +68,14 @@ class Controller_Todo extends Controller
   {
     $icon = 'glyphicon-ok';  // 既存のタスクでステータスが完了状態のものにアイコンを表示するための設定値
 
-    $view = View::forge('task');
-    $view->set('id', $id);
+    $view = View::forge('task')
+      ->set('id', $id)
+      ->set('description', $description);
     if($status === 1) {
       $view->set('status', $icon);
     } else {
       $view->set('status', '');
     }
-    $view->set('description', $description);
     return $view;
   }
 }
