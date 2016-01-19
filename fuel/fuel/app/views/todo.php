@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <form id='in-form' action="insert" method="POST">
+  <form id='in-form' action="insert_task" method="POST">
     <div class="list-group">
       <div class="row list-group-item">
         <button type="button" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
@@ -26,7 +26,7 @@
   <div class="list-group">
     <?php
       // 入れ子のViewを展開して表示する
-      foreach ($taskList as $task) {
+      foreach ($task_list as $task) {
         echo $task;
       }
     ?>

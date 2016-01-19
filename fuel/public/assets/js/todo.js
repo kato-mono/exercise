@@ -2,7 +2,7 @@
   var focusedTask = null;
 
   $(function() {
-    $('.insert-btn').click(function() {
+    $('.insert-button').click(function() {
       var target = $('in-form').get();
       target.submit();
     });
@@ -13,16 +13,16 @@
       if (focusedTask !== $(this).val()) {
 
         // DB上のdescriptionを上書きする
-        var array = {};
-        array.id = $(this).parent().attr('id');
-        array.description = $(this).val();
-        $.post('upddescription', array, null);
+        var taskAttrebutes = {};
+        taskAttrebutes.id = $(this).parent().attr('id');
+        taskAttrebutes.description = $(this).val();
+        $.post('update_description', taskAttrebutes, null);
       }
 
       focusedTask = null;
     });
 
-    $('.status-btn').click(function() {
+    $('.status-button').click(function() {
       var status = null;
 
       if ($(this).children('span').hasClass('glyphicon-ok')) {
@@ -34,17 +34,17 @@
       }
 
       // DB上のstatusを上書きする
-      var array = {};
-      array.id = $(this).parent().attr('id');
-      array.status = status;
-      $.post('updstatus', array, null);
+      var taskAttrebutes = {};
+      taskAttrebutes.id = $(this).parent().attr('id');
+      taskAttrebutes.status = status;
+      $.post('update_status', taskAttrebutes, null);
     });
 
-    $('.delete-btn').click(function() {
+    $('.delete-button').click(function() {
       // DB上のタスクを削除する
-      var array = {};
-      array.id = $(this).parent().attr('id');
-      $.post('deltask', array, null);
+      var taskAttrebutes = {};
+      taskAttrebutes.id = $(this).parent().attr('id');
+      $.post('delete_task', taskAttrebutes, null);
 
       // タスクのhtml要素を削除する
       $('.row#' + $(this).parent().attr('id')).remove();
