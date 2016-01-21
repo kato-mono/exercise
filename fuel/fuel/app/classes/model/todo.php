@@ -4,29 +4,46 @@ class Model_Todo extends \Model {
 
   public static function select_all()
   {
-    $query = DB::select('*')
+    $query = Model_Todo::select_all_query();
+    return $query->execute();
+  }
+
+  public static function select_all_orderby($column, $order)
+  {
+    $query = Model_Todo::select_all_query();
+    return $query->order_by($column, $order)->execute();
+  }
+
+  public static function select_all_query()
+  {
+    $query = DB::select(
+        'ensyu.todo.id',
+        ['ensyu.task_status.description','status_description'],
+        'ensyu.todo.status_code',
+        'ensyu.todo.description',
+        'ensyu.todo.deadline'
+      )
       ->from('ensyu.todo')
-      ->execute();
+      ->join('ensyu.task_status')
+      ->on('ensyu.todo.status_code', '=', 'ensyu.task_status.status_code');
     return $query;
   }
 
-  public static function insert_task($description)
+  public static function insert_task($description, $deadline)
   {
-    $status = 0; // ステータスの初期状態
-
     $query = DB::insert('ensyu.todo')
       ->set([
-        'status' => $status,
-        'description' => $description
+        'description' => $description,
+        'deadline' => $deadline
       ])
       ->execute();
   }
 
-  public static function update_status($id, $status)
+  public static function update_status($id, $status_code)
   {
     $query = DB::update('ensyu.todo')
       ->set([
-        'status' => $status
+        'status_code' => $status_code
       ])
       ->where('id', $id)
       ->execute();
@@ -37,6 +54,16 @@ class Model_Todo extends \Model {
     $query = DB::update('ensyu.todo')
       ->set([
         'description' => $description
+      ])
+      ->where('id', $id)
+      ->execute();
+  }
+
+  public static function update_deadline($id, $deadline)
+  {
+    $query = DB::update('ensyu.todo')
+      ->set([
+        'deadline' => $deadline
       ])
       ->where('id', $id)
       ->execute();
