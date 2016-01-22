@@ -2,10 +2,15 @@
 
 class Model_Status extends \Model {
 
-  public static function select_all()
+  private $from;
+
+  public function __construct(){
+    $this->from = 'task_status';
+  }
+  public function select()
   {
     $query = DB::select('*')
-      ->from('task_status')
+      ->from($this->from)
       ->execute();
     return $query;
   }
