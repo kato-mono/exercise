@@ -37,6 +37,13 @@ class Model_Todo extends \Model {
     return $query;
   }
 
+  public function insert_task($insert_value)
+  {
+    $query = DB::insert($this->from)
+      ->set($insert_value)
+      ->execute();
+  }
+
   public function select_column_names()
   {
     $query = DB::select(
@@ -44,7 +51,8 @@ class Model_Todo extends \Model {
       )
       ->from('information_schema.columns')
       ->where('information_schema.columns.table_schema', DB::expr('ensyu'))
-      ->and_where('information_schema.columns.table_name', DB::expr('todo'));
+      ->and_where('information_schema.columns.table_name', DB::expr('todo'))
+      ->execute();
     return $query;
   }
 }

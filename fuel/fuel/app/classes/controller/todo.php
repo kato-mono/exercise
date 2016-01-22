@@ -17,10 +17,11 @@ class Controller_Todo extends Controller
     }
 
     $view = View::forge('todo')
-      ->set('task_list',
+      ->set(
+        'task_list',
         $this->construct_task_list(
           (new Model_Todo())
-            ->select()
+            ->select_query()
             ->order_by($column, $order)
             ->execute()
         )
@@ -48,11 +49,11 @@ class Controller_Todo extends Controller
   /**
    * タスクの内容を更新する
    */
-  public function action_update()
+  public function action_update_task()
   {
     $input_all = Input::all();
 
-    (new Model_Task($id))
+    (new Model_Task($input_all['id']))
       ->update_query($input_all)
       ->execute();
 
@@ -67,7 +68,8 @@ class Controller_Todo extends Controller
     $id = Input::param('id');
 
     (new Model_Task($id))
-      ->delete_task($id);
+      ->delete_query()
+      ->execute();
 
     return Response::redirect('todo/main');
   }
