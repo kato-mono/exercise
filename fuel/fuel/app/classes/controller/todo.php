@@ -7,76 +7,56 @@ class Controller_Todo extends Controller
    */
   public function action_main()
   {
-    $view = View::forge('todo')
-      ->set('task_list', $this->construct_task_list($this->fetch_task_list_data()));
-    return $view;
-  }
-
-  /**
-   * タスクリストをソートする
-   */
-  public function action_sort_task_list()
-  {
     $column = Input::param('column');
     $order = Input::param('order');
+
+    // Post送信されていない場合は規定値でソートして表示する
+    if(is_null($column) or is_null($order)) {
+      $column = 'status_code';
+      $order = 'asc';
+    }
 
     $view = View::forge('todo')
       ->set('task_list',
         $this->construct_task_list(
-          $this->fetch_task_list_data_orderd($column, $order)
+          (new Model_Todo())
+            ->select()
+            ->order_by($column, $order)
+            ->execute()
         )
       );
 
-    return $view->render();
+    return $view;
   }
 
   /**
    * Viewから受け取った新規タスクをDBに保存する
    */
   public function action_insert_task(){
-    $description = Input::param('description');
-    $deadline = Input::param('deadline');
-    if(!($this->validate_datetime($deadline)))
+    $input_all = Input::all();
+
+    if(!($this->validate_datetime($input_all['deadline'])))
     {
-      $deadline = '0';  // 日付の書式が不正な場合の規定値
+      $input_all['deadline'] = '0';  // 日付の書式が不正な場合の規定値
     }
-    Model_Todo::insert_task($description, $deadline);
+    (new Model_Todo())
+      ->insert_task($input_all);
 
     return Response::redirect('todo/main');
   }
 
   /**
-   * タスクのステータスを更新する
+   * タスクの内容を更新する
    */
-  public function action_update_status()
+  public function action_update()
   {
-    $id = Input::param('id');
-    $status_code = Input::param('status');
-    Model_Todo::update_status($id, $status_code);
-  }
+    $input_all = Input::all();
 
-  /**
-   * タスクの記述を更新する
-   */
-  public function action_update_description()
-  {
-    $id = Input::param('id');
-    $description = Input::param('description');
-    Model_Todo::update_disctiption($id, $description);
-  }
+    (new Model_Task($id))
+      ->update_query($input_all)
+      ->execute();
 
-  /**
-   * タスクの期限を更新する
-   */
-  public function action_update_deadline()
-  {
-    $id = Input::param('id');
-    $deadline = Input::param('deadline');
-    if($this->validate_datetime($deadline))
-    {
-      Model_Todo::update_deadline($id, $deadline);
-      return Response::forge('yes');
-    }
+    return Response::redirect('todo/main');
   }
 
   /**
@@ -85,7 +65,11 @@ class Controller_Todo extends Controller
   public function action_delete_task()
   {
     $id = Input::param('id');
-    Model_Todo::delete_task($id);
+
+    (new Model_Task($id))
+      ->delete_task($id);
+
+    return Response::redirect('todo/main');
   }
 
   public function action_404(){
@@ -93,69 +77,35 @@ class Controller_Todo extends Controller
   }
 
   /**
-   * タスクリスト描画部構築用データを取得する
-   */
-  public function fetch_task_list_data()
-  {
-    return Model_Todo::select_all();
-  }
-
-  /**
-   * タスクリスト描画部構築用データ(ソート済)を取得する
-   */
-  public function fetch_task_list_data_orderd($column, $order)
-  {
-    return Model_Todo::select_all_orderby($column, $order);
-  }
-
-  /**
    * タスクリスト描画部を構築する
    */
-  public function construct_task_list($task_list_data)
+  public function construct_task_list($todo_records)
   {
-    $task_list = [];
-    foreach ($task_list_data as $item) {
-      $task_list[] = $this->construct_task($item['id'], $item['status_description'], $item['description'], $item['deadline']);
+    $task_list_view = [];
+
+    foreach ($todo_records as $todo_record) {
+      // ステータスボタンのドロップダウン描画部を構築する
+      $status_buttons = [];
+      $status_records = (new Model_Status())->select();
+
+      foreach ($status_records as $status_record) {
+        // ドロップダウン描画部を１項目分構築する
+        $status_buttons[] = View::forge('status')
+          ->set('status_code', $status_record['status_code'])
+          ->set('description', $status_record['description']);
+      }
+
+      // タスク描画部を１箇所分構築する
+      $view = View::forge('task')
+        ->set('id', $todo_record['id'])
+        ->set('status_description', $todo_record['status_description'])
+        ->set('status_dropdown', $todo_record['status_buttons'])
+        ->set('description', $todo_record['description'])
+        ->set('deadline', $todo_record['deadline']);
+
+      $task_list_view[] = $view;
     }
-    return $task_list;
-  }
-
-  /**
-   * タスク描画部を１箇所分構築する
-   */
-  public function construct_task($id, $status_description, $description, $deadline)
-  {
-    $view = View::forge('task')
-      ->set('id', $id)
-      ->set('status_description', $status_description)
-      ->set('status_dropdown', $this->construct_status_dropdown())
-      ->set('description', $description)
-      ->set('deadline', $deadline);
-    return $view;
-  }
-
-  /**
-   * ステータスボタンのドロップダウン描画部を構築する
-   */
-  public function construct_status_dropdown()
-  {
-    $status_buttons = [];
-    $result = Model_Status::select_all();
-    foreach ($result as $item) {
-      $status_buttons[] = $this->construct_status_dropdown_item($item['status_code'],$item['description']);
-    }
-    return $status_buttons;
-  }
-
-  /**
-   * ドロップダウン描画部を１項目分構築する
-   */
-  public function construct_status_dropdown_item($status_code, $status_description)
-  {
-    $view = View::forge('status')
-      ->set('status_code', $status_code)
-      ->set('status_description', $status_description);
-    return $view;
+    return $task_list_view;
   }
 
   /**
@@ -163,8 +113,14 @@ class Controller_Todo extends Controller
    */
   public function validate_datetime($datetime_str){
     return
-      $datetime_str === date("Y-m-d", strtotime($datetime_str))
+      $datetime_str === date(
+        "Y-m-d",
+        strtotime($datetime_str)
+      )
       or
-      $datetime_str === date("Y-m-d H:i:s", strtotime($datetime_str));
+      $datetime_str === date(
+        "Y-m-d H:i:s",
+        strtotime($datetime_str)
+      );
   }
 }
