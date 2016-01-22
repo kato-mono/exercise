@@ -3,7 +3,8 @@
 class Model_Task extends Model_Todo {
   private $id;
 
-  public function __construct($id) {
+  public function __construct($id)
+  {
     $this->id = $id;
   }
 
