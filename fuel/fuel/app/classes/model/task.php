@@ -9,7 +9,7 @@ class Model_Task extends Model_Todo {
   }
 
   // $set_valueに入力される連想配列のキーはDB上のカラム名とする
-  private function update_query($set_value)
+  public function update_query($set_value)
   {
     $query = DB::update($this->from)
       ->set($set_value)
