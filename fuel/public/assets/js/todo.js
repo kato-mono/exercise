@@ -3,22 +3,24 @@
 
   var eventAction = {};  // イベントハンドラ用function群を保持する変数
 
-  var order = { status: 'asc', deadline: 'desc' };
-
   eventAction.focusSubmitValue = function() {
     focusedTask = $(this).val();
   };
 
   eventAction.blurSubmitValue = function() {
     if (focusedTask !== $(this).val()) {
-      // どのソートボタンが押されたかの情報を設定する
-      $('#sort_by').val(
-        $(this).attr('name').val()
-      );
-      $(this).closest('form').get().submit;
+      $(this).closest('form').submit();
     }
 
     focusedTask = null;
+  };
+
+  eventAction.clickSortButton = function() {
+    // どのソートボタンが押されたかの情報を設定する
+    $('#sort_by').val(
+      $(this).val()
+    );
+    $(this).closest('form').submit();
   };
 
   /**
@@ -28,6 +30,9 @@
     $('.blur-submit')
       .focus(eventAction.focusSubmitValue)
       .blur(eventAction.blurSubmitValue);
+
+    $('.sort-submit')
+      .click(eventAction.clickSortButton);
   };
 
   $(function() {
