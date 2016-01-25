@@ -1,13 +1,13 @@
 (function() {
   var focusedTask = null; // フォーカスされたタスクのdescriptionを一時的に保持する変数
 
-  var eventAction = {};  // イベントハンドラ用function群を保持する変数
+  var todo = {};  // イベントハンドラ用function群を保持する変数
 
-  eventAction.focusSubmitValue = function() {
+  todo.focusSubmitValue = function() {
     focusedTask = $(this).val();
   };
 
-  eventAction.blurSubmitValue = function() {
+  todo.blurSubmitValue = function() {
     if (focusedTask !== $(this).val()) {
       $(this).closest('form').submit();
     }
@@ -15,7 +15,7 @@
     focusedTask = null;
   };
 
-  eventAction.clickSortButton = function() {
+  todo.clickSortButton = function() {
     // どのソートボタンが押されたかの情報を設定する
     $('#sort_by').val(
       $(this).val()
@@ -26,17 +26,17 @@
   /**
    * イベントハンドラに動作を設定する
    */
-  var setEventAction = function() {
+  var setTodoEvent = function() {
     $('.blur-submit')
-      .focus(eventAction.focusSubmitValue)
-      .blur(eventAction.blurSubmitValue);
+      .focus(todo.focusSubmitValue)
+      .blur(todo.blurSubmitValue);
 
     $('.sort-submit')
-      .click(eventAction.clickSortButton);
+      .click(todo.clickSortButton);
   };
 
   $(function() {
-    setEventAction();
+    setTodoEvent();
   });
 
 })();
