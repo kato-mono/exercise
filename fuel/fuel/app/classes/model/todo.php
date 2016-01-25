@@ -3,17 +3,10 @@
 class Model_Todo extends \Model {
 
   private $from;  // テーブル名を保持する
-  private $column_names; // カラム名の一覧を保持する
 
   public function __construct()
   {
     $this->from = 'ensyu.todo';
-    $this->$column_names = $this->select_column_names();
-  }
-
-  public function get_column_names()
-  {
-    return $this->column_names;
   }
 
   public function select_query()
@@ -42,17 +35,5 @@ class Model_Todo extends \Model {
     $query = DB::insert($this->from)
       ->set($insert_value)
       ->execute();
-  }
-
-  public function select_column_names()
-  {
-    $query = DB::select(
-        'column_name'
-      )
-      ->from('information_schema.columns')
-      ->where('information_schema.columns.table_schema', DB::expr('ensyu'))
-      ->and_where('information_schema.columns.table_name', DB::expr('todo'))
-      ->execute();
-    return $query;
   }
 }
