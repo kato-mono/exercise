@@ -16,10 +16,12 @@
   </div>
 
   <form action="update_task" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>">
     <input name="description" type="text" class="blur-submit col-xs-8 col-ms-8 col-md-8 col-lg-8" value="<?php echo $description; ?>" maxlength="100">
   </form>
 
   <form action="update_task" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>">
     <input name="deadline" type="text" class="blur-submit col-xs-2 col-ms-2 col-md-2 col-lg-2" value="<?php echo $deadline; ?>" maxlength="20">
   </form>
 
