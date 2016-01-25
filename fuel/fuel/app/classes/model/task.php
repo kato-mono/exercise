@@ -5,6 +5,7 @@ class Model_Task extends Model_Todo {
 
   public function __construct($id)
   {
+    parent::__construct();
     $this->id = $id;
   }
 
