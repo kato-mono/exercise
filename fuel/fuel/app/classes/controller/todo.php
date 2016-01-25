@@ -7,23 +7,38 @@ class Controller_Todo extends Controller
    */
   public function action_main()
   {
-    $column = Input::param('column');
-    $order = Input::param('order');
+    $sort_setting = Input::all();
 
     // Post送信されていない場合は規定値でソートして表示する
-    if(is_null($column) or is_null($order)) {
-      $column = 'status_code';
-      $order = 'asc';
+
+
+    if(Input::method() != 'POST') {
+      $sort_setting =
+        [
+          'column' => 'status_code',
+          'status_code' => 'desc',
+          'deadline' => 'asc'
+        ];
+    }
+
+    $sort_by = $sort_setting['column'];
+    if($sort_setting[$sort_by] === 'asc') {
+      $sort_setting[$sort_by] = 'desc';
+    } else {
+      $sort_setting[$sort_by] = 'asc';
     }
 
     $view = View::forge('todo')
+      ->set('order_status_code', $sort_setting['status_code'])
+      ->set('order_deadline', $sort_setting['deadline'])
       ->set(
         'task_list',
         $this->construct_task_list(
           (new Model_Todo())
             ->select_query()
-            ->order_by($column, $order)
-            ->execute()
+            ->order_by($sort_by, $sort_setting[$sort_by])
+            ->execute(),
+          $sort_setting
         )
       );
 
@@ -34,14 +49,14 @@ class Controller_Todo extends Controller
    * Viewから受け取った新規タスクをDBに保存する
    */
   public function action_insert_task(){
-    $input_all = Input::all();
+    $insert_paramater = Input::all();
 
-    if(!($this->validate_datetime($input_all['deadline'])))
+    if(!($this->validate_datetime($insert_paramater['deadline'])))
     {
-      $input_all['deadline'] = '0';  // 日付の書式が不正な場合の規定値
+      $insert_paramater['deadline'] = '0';  // 日付の書式が不正な場合の規定値
     }
     (new Model_Todo())
-      ->insert_task($input_all);
+      ->insert_task($insert_paramater);
 
     return Response::redirect('todo/main');
   }
@@ -51,10 +66,12 @@ class Controller_Todo extends Controller
    */
   public function action_update_task()
   {
-    $input_all = Input::all();
+    $update_parameter = Input::all();
+    $id = $update_parameter['id'];
+    unset($update_parameter['id']);
 
-    (new Model_Task($input_all['id']))
-      ->update_query($input_all)
+    (new Model_Task($id))
+      ->update_query()
       ->execute();
 
     return Response::redirect('todo/main');
@@ -65,9 +82,9 @@ class Controller_Todo extends Controller
    */
   public function action_delete_task()
   {
-    $id = Input::param('id');
+    $delete_parameter = Input::all();
 
-    (new Model_Task($id))
+    (new Model_Task($delete_parameter['id']))
       ->delete_query()
       ->execute();
 
@@ -81,7 +98,7 @@ class Controller_Todo extends Controller
   /**
    * タスクリスト描画部を構築する
    */
-  public function construct_task_list($todo_records)
+  private function construct_task_list($todo_records)
   {
     $task_list_view = [];
 
@@ -93,6 +110,7 @@ class Controller_Todo extends Controller
       foreach ($status_records as $status_record) {
         // ドロップダウン描画部を１項目分構築する
         $status_buttons[] = View::forge('status')
+          ->set('id', $todo_record['id'])
           ->set('status_code', $status_record['status_code'])
           ->set('description', $status_record['description']);
       }
@@ -113,7 +131,7 @@ class Controller_Todo extends Controller
   /**
    * mysqlに可換な日付書式であるか判定する
    */
-  public function validate_datetime($datetime_str){
+  private function validate_datetime($datetime_str){
     return
       $datetime_str === date(
         "Y-m-d",

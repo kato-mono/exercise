@@ -10,7 +10,7 @@
 </head>
 <body>
 
-  <form id='in-form' action="insert_task" method="POST">
+  <form action="insert_task" method="POST">
     <div class="list-group">
       <div class="row list-group-item">
         <button type="button" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
@@ -25,15 +25,16 @@
     </div>
   </form>
 
-  <form action="sort_task_list" method="POST">
-    <div class="list-group">
-      <div class="row list-group-item">
-        <span class="label label-default">order by:</span>
-        <button name="status_code" class="order-button btn btn-default" type="button">ステータス</button>
-        <button name="deadline" class="order-button btn btn-default" type="button">期限</button>
-      </div>
+  <div class="list-group">
+    <div class="row list-group-item">
+      <span class="label label-default">order by:</span>
+      <form action="main" method="post">
+        <input id='sort_by' type="hidden" name="column" value="">
+        <button name="status_code" class="btn btn-default" type="button" value="<?php echo $order_status_code; ?>">ステータス</button>
+        <button name="deadline" class="btn btn-default" type="button" value="<?php echo $order_deadline; ?>">期限</button>
+      </form>
     </div>
-  </form>
+  </div>
 
   <div class="list-group">
     <?php

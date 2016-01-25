@@ -1,3 +1,7 @@
-<li role="presentation" value="<?php echo $status_code; ?>">
-  <a class='status-button' role="menuitem" tabindex="-1" href="#"><?php echo $status_description; ?></a>
+<li role="presentation">
+  <form action="update_task" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>">
+    <input type="hidden" name="status_code" value="<?php echo $status_code; ?>">
+    <button type="submit" name="description"><?php echo $description; ?></button>
+  </form>
 </li>

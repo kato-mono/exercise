@@ -1,4 +1,4 @@
-<div class="row list-group-item" id="<?php echo $id; ?>">
+<div class="row list-group-item">
 
   <div class="dropdown col-xs-1 col-ms-1 col-md-1 col-lg-1">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu<?php echo $id; ?>" data-toggle="dropdown">
@@ -12,16 +12,22 @@
           echo $item;
         }
       ?>
-
     </ul>
   </div>
 
-  <input type="text" class="output-description col-xs-8 col-ms-8 col-md-8 col-lg-8" value="<?php echo $description; ?>" maxlength="100">
+  <form action="update_task" method="post">
+    <input name="description" type="text" class="blur-submit col-xs-8 col-ms-8 col-md-8 col-lg-8" value="<?php echo $description; ?>" maxlength="100">
+  </form>
 
-  <input type="text" class="output-deadline col-xs-2 col-ms-2 col-md-2 col-lg-2" value="<?php echo $deadline; ?>" maxlength="20">
+  <form action="update_task" method="post">
+    <input name="deadline" type="text" class="blur-submit col-xs-2 col-ms-2 col-md-2 col-lg-2" value="<?php echo $deadline; ?>" maxlength="20">
+  </form>
 
-  <button type="button" class="delete-button col-xs-1 col-ms-1 col-md-1 col-lg-1">
-    <span class="glyphicon glyphicon-trash"></span>
-  </button>
+  <form action="delete_task" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>">
+    <button type="submit" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
+      <span class="glyphicon glyphicon-trash"></span>
+    </button>
+  </form>
 
 </div>
