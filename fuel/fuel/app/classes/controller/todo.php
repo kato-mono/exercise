@@ -10,7 +10,8 @@ class Controller_Todo extends Controller
     $sort_setting = Input::all();
 
     // Post送信されていない場合は規定値でソートして表示する
-    if(Input::method() != 'POST') {
+    if (Input::method() != 'POST')
+    {
       $sort_setting =
         [
           'column' => 'status_code',
@@ -22,9 +23,12 @@ class Controller_Todo extends Controller
     // ソート対象のカラム情報を送信内容から抜き出す
     $sort_by = $sort_setting['column'];
 
-    if($sort_setting[$sort_by] === 'asc') {
+    if ($sort_setting[$sort_by] === 'asc')
+    {
       $sort_setting[$sort_by] = 'desc';
-    } else {
+    }
+    else
+    {
       $sort_setting[$sort_by] = 'asc';
     }
 
@@ -99,12 +103,14 @@ class Controller_Todo extends Controller
   {
     $task_list_view = [];
 
-    foreach ($todo_records as $todo_record) {
+    foreach ($todo_records as $todo_record)
+    {
       // ステータスボタンのドロップダウン描画部を構築する
       $status_buttons = [];
       $status_records = (new Model_Status())->select();
 
-      foreach ($status_records as $status_record) {
+      foreach ($status_records as $status_record)
+      {
         // ドロップダウン描画部を１項目分構築する
         $status_buttons[] = View::forge('status')
           ->set('id', $todo_record['id'])
@@ -132,7 +138,7 @@ class Controller_Todo extends Controller
   {
     $post_data = Input::all();
 
-    if(array_key_exists('deadline', $post_data)
+    if (array_key_exists('deadline', $post_data)
       && !($this->validate_datetime($post_data['deadline'])))
     {
       $post_data['deadline'] = '0';  // 日付の書式が不正な場合の規定値

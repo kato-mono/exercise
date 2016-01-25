@@ -4,9 +4,11 @@ class Model_Status extends \Model {
 
   private $from;
 
-  public function __construct(){
+  public function __construct()
+  {
     $this->from = 'task_status';
   }
+
   public function select()
   {
     $query = DB::select('*')
