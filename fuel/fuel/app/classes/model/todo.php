@@ -2,7 +2,7 @@
 
 class Model_Todo extends \Model {
 
-  private $from;  // テーブル名を保持する
+  protected $from;  // テーブル名を保持する
 
   public function __construct()
   {
