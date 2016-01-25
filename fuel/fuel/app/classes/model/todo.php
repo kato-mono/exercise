@@ -2,49 +2,38 @@
 
 class Model_Todo extends \Model {
 
-  public static function select_all()
+  protected $from;  // テーブル名を保持する
+
+  public function __construct()
   {
-    $query = DB::select('*');
-    $query->from('ensyu.todo');
-    return $query->execute();
+    $this->from = 'ensyu.todo';
   }
 
-  public static function insert_task($description)
+  public function select_query()
   {
-    $status = 0; // ステータスの初期状態
-
-    $query = DB::insert('ensyu.todo');
-    $query->set(array(
-      'status' => $status,
-      'description' => $description
-    ));
-    $query->execute();
+    $query = DB::select(
+        'ensyu.todo.id',
+        [
+          'ensyu.task_status.description',
+          'status_description'
+        ],
+        'ensyu.todo.status_code',
+        'ensyu.todo.description',
+        'ensyu.todo.deadline'
+      )
+      ->from($this->from)
+      ->join('ensyu.task_status')
+      ->on(
+        'ensyu.todo.status_code',
+        '=',
+        'ensyu.task_status.status_code');
+    return $query;
   }
 
-  public static function update_status($id, $status)
+  public function insert_task($insert_value)
   {
-    $query = DB::update('ensyu.todo');
-    $query->set(array(
-      'status' => $status
-    ));
-    $query->where('id', $id);
-    $query->execute();
-  }
-
-  public static function update_disctiption($id, $description)
-  {
-    $query = DB::update('ensyu.todo');
-    $query->set(array(
-      'description' => $description
-    ));
-    $query->where('id', $id);
-    $query->execute();
-  }
-
-  public static function delete_task($id)
-  {
-    $query = DB::delete('ensyu.todo');
-    $query->where('id', $id);
-    $query->execute();
+    $query = DB::insert($this->from)
+      ->set($insert_value)
+      ->execute();
   }
 }

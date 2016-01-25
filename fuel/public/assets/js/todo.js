@@ -1,54 +1,42 @@
-;(function() {
-  var focusedTask = null;
+(function() {
+  var focusedTask = null; // フォーカスされたタスクのdescriptionを一時的に保持する変数
+
+  var todo = {};  // イベントハンドラ用function群を保持する変数
+
+  todo.focusSubmitValue = function() {
+    focusedTask = $(this).val();
+  };
+
+  todo.blurSubmitValue = function() {
+    if (focusedTask !== $(this).val()) {
+      $(this).closest('form').submit();
+    }
+
+    focusedTask = null;
+  };
+
+  todo.clickSortButton = function() {
+    // どのソートボタンが押されたかの情報を設定する
+    $('#sort_by').val(
+      $(this).val()
+    );
+    $(this).closest('form').submit();
+  };
+
+  /**
+   * イベントハンドラに動作を設定する
+   */
+  var setTodoEvent = function() {
+    $('.blur-submit')
+      .focus(todo.focusSubmitValue)
+      .blur(todo.blurSubmitValue);
+
+    $('.sort-submit')
+      .click(todo.clickSortButton);
+  };
 
   $(function() {
-    $('.insert-button').click(function() {
-      var target = $('in-form').get();
-      target.submit();
-    });
-
-    $('.output-task').focus(function() {
-      focusedTask = $(this).val();
-    }).blur(function() {
-      if (focusedTask !== $(this).val()) {
-
-        // DB上のdescriptionを上書きする
-        var taskAttrebutes = {};
-        taskAttrebutes.id = $(this).parent().attr('id');
-        taskAttrebutes.description = $(this).val();
-        $.post('update_description', taskAttrebutes, null);
-      }
-
-      focusedTask = null;
-    });
-
-    $('.status-button').click(function() {
-      var status = null;
-
-      if ($(this).children('span').hasClass('glyphicon-ok')) {
-        $(this).children('span').removeClass('glyphicon-ok');
-        status = 0;
-      } else {
-        $(this).children('span').addClass('glyphicon-ok');
-        status = 1;
-      }
-
-      // DB上のstatusを上書きする
-      var taskAttrebutes = {};
-      taskAttrebutes.id = $(this).parent().attr('id');
-      taskAttrebutes.status = status;
-      $.post('update_status', taskAttrebutes, null);
-    });
-
-    $('.delete-button').click(function() {
-      // DB上のタスクを削除する
-      var taskAttrebutes = {};
-      taskAttrebutes.id = $(this).parent().attr('id');
-      $.post('delete_task', taskAttrebutes, null);
-
-      // タスクのhtml要素を削除する
-      $('.row#' + $(this).parent().attr('id')).remove();
-    });
+    setTodoEvent();
   });
 
 })();
