@@ -30,8 +30,10 @@
       <span class="label label-default">order by:</span>
       <form action="main" method="post">
         <input id='sort_by' type="hidden" name="column" value="">
-        <button name="status_code" class="btn btn-default" type="button" value="<?php echo $order_status_code; ?>">ステータス</button>
-        <button name="deadline" class="btn btn-default" type="button" value="<?php echo $order_deadline; ?>">期限</button>
+        <input type="hidden" name="status_code" value="<?php echo $order_status_code; ?>">
+        <input type="hidden" name="deadline" value="<?php echo $order_deadline; ?>">
+        <button class="sort-submit btn btn-default" type="button" value="status_code">ステータス</button>
+        <button class="sort-submit btn btn-default" type="button" value="deadline">期限</button>
       </form>
     </div>
   </div>
