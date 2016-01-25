@@ -10,8 +10,6 @@ class Controller_Todo extends Controller
     $sort_setting = Input::all();
 
     // Post送信されていない場合は規定値でソートして表示する
-
-
     if(Input::method() != 'POST') {
       $sort_setting =
         [
@@ -21,7 +19,9 @@ class Controller_Todo extends Controller
         ];
     }
 
+    // ソート対象のカラム情報を送信内容から抜き出す
     $sort_by = $sort_setting['column'];
+
     if($sort_setting[$sort_by] === 'asc') {
       $sort_setting[$sort_by] = 'desc';
     } else {
@@ -48,15 +48,12 @@ class Controller_Todo extends Controller
   /**
    * Viewから受け取った新規タスクをDBに保存する
    */
-  public function action_insert_task(){
-    $insert_paramater = Input::all();
+  public function action_insert_task()
+  {
+    $insert_parameter = $this->recieve_correct_post_data();
 
-    if(!($this->validate_datetime($insert_paramater['deadline'])))
-    {
-      $insert_paramater['deadline'] = '0';  // 日付の書式が不正な場合の規定値
-    }
     (new Model_Todo())
-      ->insert_task($insert_paramater);
+      ->insert_task($insert_parameter);
 
     return Response::redirect('todo/main');
   }
@@ -66,12 +63,12 @@ class Controller_Todo extends Controller
    */
   public function action_update_task()
   {
-    $update_parameter = Input::all();
+    $update_parameter = $this->recieve_correct_post_data();
     $id = $update_parameter['id'];
     unset($update_parameter['id']);
 
     (new Model_Task($id))
-      ->update_query()
+      ->update_query($update_parameter)
       ->execute();
 
     return Response::redirect('todo/main');
@@ -119,7 +116,7 @@ class Controller_Todo extends Controller
       $view = View::forge('task')
         ->set('id', $todo_record['id'])
         ->set('status_description', $todo_record['status_description'])
-        ->set('status_dropdown', $todo_record['status_buttons'])
+        ->set('status_dropdown', $status_buttons)
         ->set('description', $todo_record['description'])
         ->set('deadline', $todo_record['deadline']);
 
@@ -129,9 +126,26 @@ class Controller_Todo extends Controller
   }
 
   /**
+   * Postされたデータを修正した状態で受け取る
+   */
+  private function recieve_correct_post_data()
+  {
+    $post_data = Input::all();
+
+    if(array_key_exists('deadline', $post_data)
+      && !($this->validate_datetime($post_data['deadline'])))
+    {
+      $post_data['deadline'] = '0';  // 日付の書式が不正な場合の規定値
+    }
+
+    return $post_data;
+  }
+
+  /**
    * mysqlに可換な日付書式であるか判定する
    */
-  private function validate_datetime($datetime_str){
+  private function validate_datetime($datetime_str)
+  {
     return
       $datetime_str === date(
         "Y-m-d",
