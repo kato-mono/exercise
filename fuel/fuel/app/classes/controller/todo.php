@@ -58,8 +58,7 @@ class Controller_Todo extends Controller
           (new Model_Todo())
             ->select_query()
             ->order_by($sort_by, $sort_setting[$sort_by])
-            ->execute(),
-          $sort_setting
+            ->execute()
         )
       );
 
