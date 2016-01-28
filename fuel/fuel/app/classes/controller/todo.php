@@ -1,7 +1,24 @@
 <?php
+session_start();
 
 class Controller_Todo extends Controller
 {
+  private $user;
+
+  public function before()
+  {
+    // 利用者を識別する
+    if ( isset($_SESSION['user']) )
+    {
+      $this->user = $_SESSION['user'];
+    }
+    else
+    {
+      var_dump('利用可能なユーザーでアクセスしてください。');
+      exit;
+    }
+  }
+
   /**
    * アプリのメインページを表示する
    */
