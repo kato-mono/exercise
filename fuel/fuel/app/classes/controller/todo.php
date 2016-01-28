@@ -72,6 +72,7 @@ class Controller_Todo extends Controller
   public function action_insert_task()
   {
     $insert_parameter = $this->recieve_correct_post_data();
+    $insert_parameter += ['user_id' => $this->user];
 
     (new Model_Todo())
       ->insert_task($insert_parameter);
