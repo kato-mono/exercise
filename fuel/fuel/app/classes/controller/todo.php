@@ -49,18 +49,17 @@ class Controller_Todo extends Controller
       $sort_setting[$sort_by] = 'asc';
     }
 
+    $todo_records = (new Model_Todo())
+      ->select_query()
+      ->order_by($sort_by, $sort_setting[$sort_by])
+      ->execute();
+
+    $task_list_view = $this->construct_task_list($todo_records);
+
     $view = View::forge('todo')
       ->set('order_status_code', $sort_setting['status_code'])
       ->set('order_deadline', $sort_setting['deadline'])
-      ->set(
-        'task_list',
-        $this->construct_task_list(
-          (new Model_Todo())
-            ->select_query()
-            ->order_by($sort_by, $sort_setting[$sort_by])
-            ->execute()
-        )
-      );
+      ->set('task_list', $task_list_view);
 
     return $view;
   }
