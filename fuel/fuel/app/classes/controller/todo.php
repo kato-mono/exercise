@@ -51,6 +51,7 @@ class Controller_Todo extends Controller
 
     $todo_records = (new Model_Todo())
       ->select_query()
+      ->where('user_id', $this->user)
       ->order_by($sort_by, $sort_setting[$sort_by])
       ->execute();
 
