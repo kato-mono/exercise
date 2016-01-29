@@ -9,7 +9,7 @@
   <?php echo Asset::js("todo.js"); ?>
 </head>
 <body>
-  <form action="make_csv" method="post">
+  <form action="download_csv" method="post">
     <button class="btn btn-default" type="submit">CSVダウンロード</button>
   </form>
 

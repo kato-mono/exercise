@@ -68,32 +68,20 @@ class Controller_Todo extends Controller
   /**
    * csvファイルを生成する
    */
-  public function action_make_csv()
+  public function action_download_csv()
   {
-    $todo_records = (new Model_Todo())
-      ->select_query()
-      ->where('user_id', $this->user)
-      ->execute();
-
-    $csvFileName = '/tmp/'.time().'.csv';
-    $csvFile = new SplFileObject($csvFileName, 'w');
-
-    foreach ($todo_records as $todo_record)
-    {
-      $csvFile->fputcsv($todo_record);
-    }
+    $csvFilePath = (new Model_Todo())
+      ->make_csv($this->user);
 
     $response = new Response();
-    // 任意のバイナリとして出力する
-    $response->set_header('Content-Type', 'application/octet-stream');
-    // どんな名前でダウンロードされるか指定する
-    $response->set_header('Content-Disposition', 'attachment; filename="todo.csv"');
-    // キャッシュを効かせない
-    $response->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-    readfile($csvFileName);
+    $response->set_header('Content-Type', 'application/octet-stream')
+      ->set_header('Content-Disposition', 'attachment; filename="todo.csv"')
+      ->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+
+    readfile($csvFilePath);
 
     // 一時ファイルを削除する
-    unlink($csvFileName);
+    unlink($csvFilePath);
 
     return $response;
   }
