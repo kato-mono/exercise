@@ -1,7 +1,24 @@
 <?php
+session_start();
 
 class Controller_Todo extends Controller
 {
+  private $user;
+
+  public function before()
+  {
+    // 利用者を識別する
+    if ( isset($_SESSION['user']) )
+    {
+      $this->user = $_SESSION['user'];
+    }
+    else
+    {
+      var_dump('利用可能なユーザーでアクセスしてください。');
+      exit;
+    }
+  }
+
   /**
    * アプリのメインページを表示する
    */
@@ -32,21 +49,41 @@ class Controller_Todo extends Controller
       $sort_setting[$sort_by] = 'asc';
     }
 
+    $todo_records = (new Model_Todo())
+      ->select_query()
+      ->where('user_id', $this->user)
+      ->order_by($sort_by, $sort_setting[$sort_by])
+      ->execute();
+
+    $task_list_view = $this->construct_task_list($todo_records);
+
     $view = View::forge('todo')
       ->set('order_status_code', $sort_setting['status_code'])
       ->set('order_deadline', $sort_setting['deadline'])
-      ->set(
-        'task_list',
-        $this->construct_task_list(
-          (new Model_Todo())
-            ->select_query()
-            ->order_by($sort_by, $sort_setting[$sort_by])
-            ->execute(),
-          $sort_setting
-        )
-      );
+      ->set('task_list', $task_list_view);
 
     return $view;
+  }
+
+  /**
+   * csvファイルを生成する
+   */
+  public function action_download_csv()
+  {
+    $csvFilePath = (new Model_Todo())
+      ->make_csv($this->user);
+
+    $response = new Response();
+    $response->set_header('Content-Type', 'application/octet-stream')
+      ->set_header('Content-Disposition', 'attachment; filename="todo.csv"')
+      ->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+
+    readfile($csvFilePath);
+
+    // 一時ファイルを削除する
+    unlink($csvFilePath);
+
+    return $response;
   }
 
   /**
@@ -55,6 +92,7 @@ class Controller_Todo extends Controller
   public function action_insert_task()
   {
     $insert_parameter = $this->recieve_correct_post_data();
+    $insert_parameter += ['user_id' => $this->user];
 
     (new Model_Todo())
       ->insert_task($insert_parameter);
