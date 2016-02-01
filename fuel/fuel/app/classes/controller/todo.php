@@ -66,24 +66,38 @@ class Controller_Todo extends Controller
   }
 
   /**
-   * csvファイルを生成する
+   * ダウンロードコンテンツを返す
    */
-  public function action_download_csv()
+  public function action_download_content()
   {
-    $csvFilePath = (new Model_Todo())
-      ->make_csv($this->user);
+    $content_type = Input::post('content_type');
+    $content = null;
 
-    $response = new Response();
-    $response->set_header('Content-Type', 'application/octet-stream')
-      ->set_header('Content-Disposition', 'attachment; filename="todo.csv"')
-      ->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+    if ($content_type === 'csv')
+    {
+      $content = new Model_Other_Csv();
+    }
+    else if ($content_type === 'xml')
+    {
+      $content = new Model_Other_Xml();
+    }
+    else if ($content_type === 'json')
+    {
+      $content = new Model_Other_Json();
+    }
+    else
+    {
+      var_dump('content_typeが 不正です。');
+      exit;
+    }
 
-    readfile($csvFilePath);
+    (new Model_Todo())
+      ->make_content(
+        $this->user,
+        $content
+      );
 
-    // 一時ファイルを削除する
-    unlink($csvFilePath);
-
-    return $response;
+    return $content->make_response();
   }
 
   /**

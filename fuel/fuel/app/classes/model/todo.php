@@ -37,20 +37,12 @@ class Model_Todo extends \Model {
       ->execute();
   }
 
-  public function make_csv($user)
+  public function make_content($user, $content)
   {
     $todo_records = $this->select_query()
       ->where('user_id', $user)
       ->execute();
 
-    $csvFilePath = '/tmp/'.time().'.csv';
-    $csvFile = new SplFileObject($csvFilePath, 'w');
-
-    foreach ($todo_records as $todo_record)
-    {
-      $csvFile->fputcsv($todo_record);
-    }
-
-    return $csvFilePath;
+    $content->make_data($todo_records);
   }
 }

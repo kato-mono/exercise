@@ -9,8 +9,13 @@
   <?php echo Asset::js("todo.js"); ?>
 </head>
 <body>
-  <form action="download_csv" method="post">
-    <button class="btn btn-default" type="submit">CSVダウンロード</button>
+  <form action="download_content" method="post">
+    <select name="content_type" class="form-control">
+      <option value="csv">csv</option>
+      <option value="xml">xml</option>
+      <option value="json">json</option>
+    </select>
+    <button class="btn btn-default" type="submit">ダウンロード</button>
   </form>
 
   <form action="insert_task" method="POST">
