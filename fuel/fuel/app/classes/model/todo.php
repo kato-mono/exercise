@@ -11,7 +11,7 @@ class Model_Todo extends \Model {
     $this->user_id = $user_id;
   }
 
-  public function select_query()
+  private function select_query()
   {
     $query = DB::select(
         'ensyu.todo.id',
@@ -33,7 +33,7 @@ class Model_Todo extends \Model {
     return $query;
   }
 
-  public function search_task($search_value)
+  public function search_task($search_value, $sort_setting)
   {
     $query = $this->select_query();
 
@@ -46,6 +46,9 @@ class Model_Todo extends \Model {
       $query->where('ensyu.todo.description', 'like', '%'.$search_value.'%');
     }
 
+    $sort_by = $sort_setting['column'];
+    $query->order_by($sort_by, $sort_setting[$sort_by]);
+
     return $query->execute();
   }
 
@@ -56,12 +59,8 @@ class Model_Todo extends \Model {
       ->execute();
   }
 
-  public function make_content($content)
+  public function make_content($content, $records)
   {
-    $todo_records = $this->select_query()
-      ->where('user_id', $this->user_id)
-      ->execute();
-
-    $content->make_data($todo_records);
+    $content->make_data($records);
   }
 }

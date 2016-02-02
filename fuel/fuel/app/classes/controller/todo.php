@@ -24,40 +24,47 @@ class Controller_Todo extends Controller
    */
   public function action_main()
   {
+    $parameter = Input::all();
     $sort_setting = null;
-    $column = Input::post('column');
-    $status_code = Input::post('status_code');
-    $deadline = Input::post('deadline');
-    $search_keyword = Input::post('search_keyword');
 
-    // ソート情報が送信されていない場合は規定値でソートして表示する
-    if (is_null($column) or is_null($status_code) or is_null($deadline))
+    // Post送信されていない場合は規定値を使用する
+    if (Input::method() != 'POST')
     {
-      $sort_setting =
-        [
-          'column' => 'status_code',
-          'status_code' => 'desc',
-          'deadline' => 'asc'
-        ];
+      if (isset($_SESSION['search_keyword']) and isset($_SESSION['sort_setting']))
+      {
+        $search_keyword = $_SESSION['search_keyword'];
+        $sort_setting = $_SESSION['sort_setting'];
+      }
+      else
+      {
+        $sort_setting =
+          [
+            'column' => 'status_code',
+            'status_code' => 'desc',
+            'deadline' => 'asc'
+          ];
+        $search_keyword = '';
+      }
     }
     else
     {
       $sort_setting =
         [
-          'column' => $column,
-          'status_code' => $status_code,
-          'deadline' => $deadline
+          'column' => $parameter['column'],
+          'status_code' => $parameter['status_code'],
+          'deadline' => $parameter['deadline']
         ];
-    }
+      $search_keyword = $parameter['search_keyword'];
 
-    $todo_records = null;
-
-    if(is_null($search_keyword))
-    {
       // ソート対象のカラム情報を送信内容から抜き出す
       $sort_by = $sort_setting['column'];
 
-      if ($sort_setting[$sort_by] === 'asc')
+      if ($sort_by === '')
+      {
+        $sort_setting['column'] = 'status_code';
+        $sort_by = $sort_setting['column'];
+      }
+      else if ($sort_setting[$sort_by] === 'asc')
       {
         $sort_setting[$sort_by] = 'desc';
       }
@@ -65,24 +72,22 @@ class Controller_Todo extends Controller
       {
         $sort_setting[$sort_by] = 'asc';
       }
+    }
 
-      $todo_records = (new Model_Todo($this->user))
-        ->select_query()
-        ->order_by($sort_by, $sort_setting[$sort_by])
-        ->execute();
-    }
-    else
-    {
-      $todo_records = (new Model_Todo($this->user))
-        ->search_task($search_keyword);
-    }
+    $todo_records = (new Model_Todo($this->user))
+      ->search_task($search_keyword, $sort_setting);
 
     $task_list_view = $this->construct_task_list($todo_records);
 
     $view = View::forge('todo')
       ->set('order_status_code', $sort_setting['status_code'])
       ->set('order_deadline', $sort_setting['deadline'])
+      ->set('search_keyword', $search_keyword)
       ->set('task_list', $task_list_view);
+
+    // 検索設定を保持する
+    $_SESSION['search_keyword'] = $search_keyword;
+    $_SESSION['sort_setting'] = $sort_setting;
 
     return $view;
   }
@@ -113,8 +118,21 @@ class Controller_Todo extends Controller
       exit;
     }
 
-    (new Model_Todo($this->user))
-      ->make_content($content);
+    $model_todo = new Model_Todo($this->user);
+    // 書き出すデータを取得する
+    $records = null;
+    if (isset($_SESSION['search_keyword']) and isset($_SESSION['sort_setting']))
+    {
+      $records = $model_todo
+        ->search_task($_SESSION['search_keyword'], $_SESSION['sort_setting']);
+    }
+    else
+    {
+      var_dump('画面表示設定を読み込めませんでした。');
+      exit;
+    }
+
+    $model_todo->make_content($content, $records);
 
     return $content->make_response();
   }

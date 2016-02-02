@@ -33,26 +33,24 @@
     </div>
   </form>
 
-  <div class="list-group">
-    <div class="row list-group-item">
-      <span class="label label-default">order by:</span>
-      <form action="main" method="post">
+  <form action="main" method="POST">
+    <div class="list-group">
+      <div class="row list-group-item">
+        <span class="label label-default">order by:</span>
         <input id='sort_by' type="hidden" name="column" value="">
         <input type="hidden" name="status_code" value="<?php echo $order_status_code; ?>">
         <input type="hidden" name="deadline" value="<?php echo $order_deadline; ?>">
         <button class="sort-submit btn btn-default" type="button" value="status_code">ステータス</button>
         <button class="sort-submit btn btn-default" type="button" value="deadline">期限</button>
-      </form>
+      </div>
     </div>
-  </div>
 
-  <form action="main" method="POST">
     <div class="list-group">
       <div class="row list-group-item">
         <button type="button" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
           <span class="glyphicon"></span>
         </button>
-        <input name="search_keyword" type="text" class="col-xs-10 col-ms-10 col-md-10 col-lg-10" placeholder="検索語を入力" maxlength="100">
+        <input name="search_keyword" type="text" class="col-xs-10 col-ms-10 col-md-10 col-lg-10" value="<?php echo $search_keyword; ?>" placeholder="検索語を入力" maxlength="100">
         <button type="submit" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
           <span class="glyphicon glyphicon-search"></span>
         </button>
