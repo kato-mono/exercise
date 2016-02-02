@@ -46,6 +46,20 @@
     </div>
   </div>
 
+  <form action="main" method="POST">
+    <div class="list-group">
+      <div class="row list-group-item">
+        <button type="button" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
+          <span class="glyphicon"></span>
+        </button>
+        <input name="search_keyword" type="text" class="col-xs-10 col-ms-10 col-md-10 col-lg-10" placeholder="検索語を入力" maxlength="100">
+        <button type="submit" class="col-xs-1 col-ms-1 col-md-1 col-lg-1">
+          <span class="glyphicon glyphicon-search"></span>
+        </button>
+      </div>
+    </div>
+  </form>
+
   <div class="list-group">
     <?php
       // 入れ子のViewを展開して表示する

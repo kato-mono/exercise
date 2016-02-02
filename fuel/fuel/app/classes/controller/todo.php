@@ -24,10 +24,14 @@ class Controller_Todo extends Controller
    */
   public function action_main()
   {
-    $sort_setting = Input::all();
+    $sort_setting = null;
+    $column = Input::post('column');
+    $status_code = Input::post('status_code');
+    $deadline = Input::post('deadline');
+    $search_keyword = Input::post('search_keyword');
 
-    // Post送信されていない場合は規定値でソートして表示する
-    if (Input::method() != 'POST')
+    // ソート情報が送信されていない場合は規定値でソートして表示する
+    if (is_null($column) or is_null($status_code) or is_null($deadline))
     {
       $sort_setting =
         [
@@ -36,24 +40,42 @@ class Controller_Todo extends Controller
           'deadline' => 'asc'
         ];
     }
-
-    // ソート対象のカラム情報を送信内容から抜き出す
-    $sort_by = $sort_setting['column'];
-
-    if ($sort_setting[$sort_by] === 'asc')
+    else
     {
-      $sort_setting[$sort_by] = 'desc';
+      $sort_setting =
+        [
+          'column' => $column,
+          'status_code' => $status_code,
+          'deadline' => $deadline
+        ];
+    }
+
+    $todo_records = null;
+
+    if(is_null($search_keyword))
+    {
+      // ソート対象のカラム情報を送信内容から抜き出す
+      $sort_by = $sort_setting['column'];
+
+      if ($sort_setting[$sort_by] === 'asc')
+      {
+        $sort_setting[$sort_by] = 'desc';
+      }
+      else
+      {
+        $sort_setting[$sort_by] = 'asc';
+      }
+
+      $todo_records = (new Model_Todo($this->user))
+        ->select_query()
+        ->order_by($sort_by, $sort_setting[$sort_by])
+        ->execute();
     }
     else
     {
-      $sort_setting[$sort_by] = 'asc';
+      $todo_records = (new Model_Todo($this->user))
+        ->search_task($search_keyword);
     }
-
-    $todo_records = (new Model_Todo())
-      ->select_query()
-      ->where('user_id', $this->user)
-      ->order_by($sort_by, $sort_setting[$sort_by])
-      ->execute();
 
     $task_list_view = $this->construct_task_list($todo_records);
 
@@ -91,11 +113,8 @@ class Controller_Todo extends Controller
       exit;
     }
 
-    (new Model_Todo())
-      ->make_content(
-        $this->user,
-        $content
-      );
+    (new Model_Todo($this->user))
+      ->make_content($content);
 
     return $content->make_response();
   }
@@ -108,7 +127,7 @@ class Controller_Todo extends Controller
     $insert_parameter = $this->recieve_correct_post_data();
     $insert_parameter += ['user_id' => $this->user];
 
-    (new Model_Todo())
+    (new Model_Todo($this->user))
       ->insert_task($insert_parameter);
 
     return Response::redirect('todo/main');
@@ -123,7 +142,7 @@ class Controller_Todo extends Controller
     $id = $update_parameter['id'];
     unset($update_parameter['id']);
 
-    (new Model_Task($id))
+    (new Model_Task($id, $this->user))
       ->update_query($update_parameter)
       ->execute();
 
@@ -137,7 +156,7 @@ class Controller_Todo extends Controller
   {
     $delete_parameter = Input::all();
 
-    (new Model_Task($delete_parameter['id']))
+    (new Model_Task($delete_parameter['id'], $this->user))
       ->delete_query()
       ->execute();
 
