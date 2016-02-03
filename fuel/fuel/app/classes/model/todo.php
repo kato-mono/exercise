@@ -11,20 +11,29 @@ class Model_Todo extends \Model {
     $this->user_id = $user_id;
   }
 
+  public function change_sort_order($sort_by, $sort_setting)
+  {
+    $sort_setting['sort_by'] = $sort_by;
+
+    if ($sort_setting[$sort_by] === 'asc')
+    {
+      $sort_setting[$sort_by] = 'desc';
+    }
+    else
+    {
+      $sort_setting[$sort_by] = 'asc';
+    }
+
+    return $sort_setting;
+  }
+
   public function search_task($search_value, $sort_setting)
   {
     $query = $this->select_query();
 
-    if (empty(trim($search_value)))
-    {
-      // 検索文字列が空白やスペースのみの場合
-    }
-    else
-    {
-      $query->where('ensyu.todo.description', 'like', '%'.$search_value.'%');
-    }
+    $query->where('ensyu.todo.description', 'like', '%'.$search_value.'%');
 
-    $sort_by = $sort_setting['column'];
+    $sort_by = $sort_setting['sort_by'];
     $query->order_by($sort_by, $sort_setting[$sort_by]);
 
     return $query->execute();

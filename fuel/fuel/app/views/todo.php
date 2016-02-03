@@ -33,13 +33,11 @@
     </div>
   </form>
 
-  <form action="main" method="POST">
+  <form action="search_task" method="POST">
     <div class="list-group">
       <div class="row list-group-item">
         <span class="label label-default">order by:</span>
-        <input id='sort_by' type="hidden" name="column" value="">
-        <input type="hidden" name="status_code" value="<?php echo $order_status_code; ?>">
-        <input type="hidden" name="deadline" value="<?php echo $order_deadline; ?>">
+        <input id='sort_by' type="hidden" name="sort_by" value="">
         <button class="sort-submit btn btn-default" type="button" value="status_code">ステータス</button>
         <button class="sort-submit btn btn-default" type="button" value="deadline">期限</button>
       </div>
