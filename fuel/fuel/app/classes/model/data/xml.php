@@ -1,18 +1,16 @@
 <?php
 
-class Model_Other_Xml implements Model_Other_Content
+class Model_Data_Xml extends Model_Data implements Interface_Data_Format
 {
-  private $xml;
-
-  public function make_response()
+  public function __construct()
   {
-    $response = new Response();
-    $response->set_header('Content-Type', 'application/xml')
-      ->set_header('Content-Disposition', 'attachment; filename="todo.xml"')
-      ->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
-      ->body($this->xml);
+    $headers = [
+      'Content-Type' => 'application/xml',
+      'Content-Disposition' => 'attachment; filename="todo.xml"',
+      'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
+    ];
 
-    return $response;
+    parent::__construct($headers);
   }
 
   public function make_data($records)
@@ -27,6 +25,6 @@ class Model_Other_Xml implements Model_Other_Content
       $row->addChild('deadline', $record['deadline']);
     }
 
-    $this->xml = $root->asXML();
+    return $root->asXML();
   }
 }

@@ -98,19 +98,19 @@ class Controller_Todo extends Controller
   public function action_download_content()
   {
     $content_type = Input::post('content_type');
-    $content = null;
+    $data_format = null;
 
     if ($content_type === 'csv')
     {
-      $content = new Model_Other_Csv();
+      $data_format = new Model_Data_Csv();
     }
     else if ($content_type === 'xml')
     {
-      $content = new Model_Other_Xml();
+      $data_format = new Model_Data_Xml();
     }
     else if ($content_type === 'json')
     {
-      $content = new Model_Other_Json();
+      $data_format = new Model_Data_Json();
     }
     else
     {
@@ -118,12 +118,11 @@ class Controller_Todo extends Controller
       exit;
     }
 
-    $model_todo = new Model_Todo($this->user);
     // 書き出すデータを取得する
     $records = null;
     if (isset($_SESSION['search_keyword']) and isset($_SESSION['sort_setting']))
     {
-      $records = $model_todo
+      $records = (new Model_Todo($this->user))
         ->search_task($_SESSION['search_keyword'], $_SESSION['sort_setting']);
     }
     else
@@ -132,9 +131,7 @@ class Controller_Todo extends Controller
       exit;
     }
 
-    $model_todo->make_content($content, $records);
-
-    return $content->make_response();
+    return $data_format->make_response($records);
   }
 
   /**

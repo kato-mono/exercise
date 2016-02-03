@@ -59,8 +59,4 @@ class Model_Todo extends \Model {
       ->execute();
   }
 
-  public function make_content($content, $records)
-  {
-    $content->make_data($records);
-  }
 }
