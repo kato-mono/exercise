@@ -11,28 +11,6 @@ class Model_Todo extends \Model {
     $this->user_id = $user_id;
   }
 
-  private function select_query()
-  {
-    $query = DB::select(
-        'ensyu.todo.id',
-        [
-          'ensyu.task_status.description',
-          'status_description'
-        ],
-        'ensyu.todo.status_code',
-        'ensyu.todo.description',
-        'ensyu.todo.deadline'
-      )
-      ->from($this->from)
-      ->join('ensyu.task_status')
-      ->on(
-        'ensyu.todo.status_code',
-        '=',
-        'ensyu.task_status.status_code')
-      ->where('user_id', $this->user_id);
-    return $query;
-  }
-
   public function search_task($search_value, $sort_setting)
   {
     $query = $this->select_query();
@@ -59,4 +37,25 @@ class Model_Todo extends \Model {
       ->execute();
   }
 
+  private function select_query()
+  {
+    $query = DB::select(
+        'ensyu.todo.id',
+        [
+          'ensyu.task_status.description',
+          'status_description'
+        ],
+        'ensyu.todo.status_code',
+        'ensyu.todo.description',
+        'ensyu.todo.deadline'
+      )
+      ->from($this->from)
+      ->join('ensyu.task_status')
+      ->on(
+        'ensyu.todo.status_code',
+        '=',
+        'ensyu.task_status.status_code')
+      ->where('user_id', $this->user_id);
+    return $query;
+  }
 }
