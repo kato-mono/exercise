@@ -1,6 +1,6 @@
 <?php
 
-class Model_Data_Json extends Model_Data implements Interface_Data_Format
+class Model_Data_Json extends Model_Data
 {
   public function __construct()
   {
