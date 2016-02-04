@@ -13,6 +13,11 @@ class Model_Todo extends \Model {
 
   public function change_sort_order($sort_by, $sort_setting)
   {
+    if(empty(trim($sort_by)))
+    {
+      return $sort_setting;
+    }
+
     $sort_setting['sort_by'] = $sort_by;
 
     if ($sort_setting[$sort_by] === 'asc')

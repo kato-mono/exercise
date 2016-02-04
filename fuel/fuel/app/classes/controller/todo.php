@@ -93,27 +93,11 @@ class Controller_Todo extends Controller
   public function action_search_task()
   {
     $parameter = Input::all();
-    $sort_setting = null;
 
-    $sort_by = $parameter['sort_by'];
-    $search_keyword = $parameter['search_keyword'];
+    $_SESSION['sort_setting'] = (new Model_Todo($this->user))
+      ->change_sort_order($parameter['sort_by'], $_SESSION['sort_setting']);
 
-    if(!empty(trim($sort_by)))
-    {
-      $sort_setting = (new Model_Todo($this->user))
-        ->change_sort_order($sort_by, $_SESSION['sort_setting']);
-
-      $_SESSION['sort_setting'] = $sort_setting;
-    }
-
-    if(empty(trim($search_keyword)))
-    {
-      $_SESSION['search_keyword'] = '';
-    }
-    else
-    {
-      $_SESSION['search_keyword'] = $parameter['search_keyword'];
-    }
+    $_SESSION['search_keyword'] = trim($parameter['search_keyword']);
 
     return Response::redirect('todo/main');
   }
