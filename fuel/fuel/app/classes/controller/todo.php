@@ -60,19 +60,19 @@ class Controller_Todo extends Controller
   public function action_download_content()
   {
     $content_type = Input::post('content_type');
-    $data_format = null;
+    $downloader = null;
 
     if ($content_type === 'csv')
     {
-      $data_format = new Model_Data_Csv();
+      $downloader = new Model_Downloader_Csv();
     }
     else if ($content_type === 'xml')
     {
-      $data_format = new Model_Data_Xml();
+      $downloader = new Model_Downloader_Xml();
     }
     else if ($content_type === 'json')
     {
-      $data_format = new Model_Data_Json();
+      $downloader = new Model_Downloader_Json();
     }
     else
     {
@@ -84,7 +84,7 @@ class Controller_Todo extends Controller
     $records = $this->model_todo
       ->search_task($_SESSION['search_keyword'], $_SESSION['sort_setting']);
 
-    return $data_format->make_response($records);
+    return $downloader->make_response($records);
   }
 
   /**

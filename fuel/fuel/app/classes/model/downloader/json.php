@@ -1,6 +1,6 @@
 <?php
 
-class Model_Data_Json extends Model_Data
+class Model_Downloader_Json extends Model_Downloader
 {
   public function __construct()
   {

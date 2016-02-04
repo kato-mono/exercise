@@ -1,6 +1,6 @@
 <?php
 
-class Model_Data_Csv extends Model_Data
+class Model_Downloader_Csv extends Model_Downloader
 {
   public function __construct()
   {

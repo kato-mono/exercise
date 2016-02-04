@@ -1,6 +1,6 @@
 <?php
 
-abstract class Model_Data extends \Model {
+abstract class Model_Downloader extends \Model {
 
   protected $headers;
 
