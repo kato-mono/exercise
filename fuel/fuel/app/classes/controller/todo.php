@@ -4,6 +4,7 @@ session_start();
 class Controller_Todo extends Controller
 {
   private $user;
+  private $model_todo;
 
   public function before()
   {
@@ -32,6 +33,8 @@ class Controller_Todo extends Controller
     {
       $_SESSION['search_keyword'] = '';
     }
+
+    $this->model_todo = new Model_Todo($this->user);
   }
 
   /**
@@ -42,7 +45,7 @@ class Controller_Todo extends Controller
     $sort_setting = $_SESSION['sort_setting'];
     $search_keyword = $_SESSION['search_keyword'];
 
-    $todo_records = (new Model_Todo($this->user))
+    $todo_records = $this->model_todo
       ->search_task($search_keyword, $sort_setting);
 
     $task_list_view = $this->construct_task_list($todo_records);
@@ -81,7 +84,7 @@ class Controller_Todo extends Controller
     }
 
     // 書き出すデータを取得する
-    $records = (new Model_Todo($this->user))
+    $records = $this->model_todo
       ->search_task($_SESSION['search_keyword'], $_SESSION['sort_setting']);
 
     return $data_format->make_response($records);
@@ -94,7 +97,7 @@ class Controller_Todo extends Controller
   {
     $parameter = Input::all();
 
-    $_SESSION['sort_setting'] = (new Model_Todo($this->user))
+    $_SESSION['sort_setting'] = $this->model_todo
       ->change_sort_order($parameter['sort_by'], $_SESSION['sort_setting']);
 
     $_SESSION['search_keyword'] = trim($parameter['search_keyword']);
@@ -110,7 +113,7 @@ class Controller_Todo extends Controller
     $insert_parameter = $this->recieve_correct_post_data();
     $insert_parameter += ['user_id' => $this->user];
 
-    (new Model_Todo($this->user))
+    $this->model_todo
       ->insert_task($insert_parameter);
 
     return Response::redirect('todo/main');
