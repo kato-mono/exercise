@@ -19,22 +19,19 @@ class Controller_Todo extends Controller
       exit;
     }
 
+    $this->model_todo = new Model_Todo($this->user);
+
     if (!isset($_SESSION['sort_setting']))
     {
-      $_SESSION['sort_setting'] =
-        [
-          'sort_by' => 'status_code',
-          'status_code' => 'asc',
-          'deadline' => 'asc'
-        ];
+      $_SESSION['sort_setting'] = $this->model_todo
+        ->make_initial_setting('sort_setting');
     }
 
     if (!isset($_SESSION['search_keyword']))
     {
-      $_SESSION['search_keyword'] = '';
+      $_SESSION['search_keyword'] = $this->model_todo
+        ->make_initial_setting('search_keyword');
     }
-
-    $this->model_todo = new Model_Todo($this->user);
   }
 
   /**

@@ -11,6 +11,21 @@ class Model_Todo extends \Model {
     $this->user_id = $user_id;
   }
 
+  public function make_initial_setting($setting_name)
+  {
+    $initial_settings = [];
+
+    $initial_settings['sort_setting'] = [
+      'sort_by' => 'status_code',
+      'status_code' => 'asc',
+      'deadline' => 'asc'
+    ];
+
+    $initial_settings['search_keyword'] = '';
+
+    return $initial_settings[$setting_name];
+  }
+
   public function change_sort_order($sort_by, $sort_setting)
   {
     if(empty(trim($sort_by)))
