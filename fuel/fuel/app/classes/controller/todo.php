@@ -4,11 +4,12 @@ session_start();
 class Controller_Todo extends Controller
 {
   private $user;
+  private $model_todo;
 
   public function before()
   {
     // 利用者を識別する
-    if ( isset($_SESSION['user']) )
+    if (isset($_SESSION['user']))
     {
       $this->user = $_SESSION['user'];
     }
@@ -17,6 +18,20 @@ class Controller_Todo extends Controller
       var_dump('利用可能なユーザーでアクセスしてください。');
       exit;
     }
+
+    $this->model_todo = new Model_Todo($this->user);
+
+    if (!isset($_SESSION['sort_setting']))
+    {
+      $_SESSION['sort_setting'] = $this->model_todo
+        ->make_initial_setting('sort_setting');
+    }
+
+    if (!isset($_SESSION['search_keyword']))
+    {
+      $_SESSION['search_keyword'] = $this->model_todo
+        ->make_initial_setting('search_keyword');
+    }
   }
 
   /**
@@ -24,66 +39,67 @@ class Controller_Todo extends Controller
    */
   public function action_main()
   {
-    $sort_setting = Input::all();
+    $sort_setting = $_SESSION['sort_setting'];
+    $search_keyword = $_SESSION['search_keyword'];
 
-    // Post送信されていない場合は規定値でソートして表示する
-    if (Input::method() != 'POST')
-    {
-      $sort_setting =
-        [
-          'column' => 'status_code',
-          'status_code' => 'desc',
-          'deadline' => 'asc'
-        ];
-    }
-
-    // ソート対象のカラム情報を送信内容から抜き出す
-    $sort_by = $sort_setting['column'];
-
-    if ($sort_setting[$sort_by] === 'asc')
-    {
-      $sort_setting[$sort_by] = 'desc';
-    }
-    else
-    {
-      $sort_setting[$sort_by] = 'asc';
-    }
-
-    $todo_records = (new Model_Todo())
-      ->select_query()
-      ->where('user_id', $this->user)
-      ->order_by($sort_by, $sort_setting[$sort_by])
-      ->execute();
+    $todo_records = $this->model_todo
+      ->search_task($search_keyword, $sort_setting);
 
     $task_list_view = $this->construct_task_list($todo_records);
 
     $view = View::forge('todo')
-      ->set('order_status_code', $sort_setting['status_code'])
-      ->set('order_deadline', $sort_setting['deadline'])
+      ->set('search_keyword', $search_keyword)
       ->set('task_list', $task_list_view);
 
     return $view;
   }
 
   /**
-   * csvファイルを生成する
+   * ダウンロードコンテンツを返す
    */
-  public function action_download_csv()
+  public function action_download_content()
   {
-    $csvFilePath = (new Model_Todo())
-      ->make_csv($this->user);
+    $content_type = Input::post('content_type');
+    $downloader = null;
 
-    $response = new Response();
-    $response->set_header('Content-Type', 'application/octet-stream')
-      ->set_header('Content-Disposition', 'attachment; filename="todo.csv"')
-      ->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+    if ($content_type === 'csv')
+    {
+      $downloader = new Model_Downloader_Csv();
+    }
+    else if ($content_type === 'xml')
+    {
+      $downloader = new Model_Downloader_Xml();
+    }
+    else if ($content_type === 'json')
+    {
+      $downloader = new Model_Downloader_Json();
+    }
+    else
+    {
+      var_dump('content_typeが 不正です。');
+      exit;
+    }
 
-    readfile($csvFilePath);
+    // 書き出すデータを取得する
+    $records = $this->model_todo
+      ->search_task($_SESSION['search_keyword'], $_SESSION['sort_setting']);
 
-    // 一時ファイルを削除する
-    unlink($csvFilePath);
+    return $downloader->make_response($records);
+  }
 
-    return $response;
+  /**
+   * 指定された条件に合致するタスクを表示する
+   */
+  public function action_search_task()
+  {
+    $parameter = Input::all();
+
+    $_SESSION['sort_setting'] = $this->model_todo
+      ->change_sort_order($parameter['sort_by'], $_SESSION['sort_setting']);
+
+    $_SESSION['search_keyword'] = trim($parameter['search_keyword']);
+
+    return Response::redirect('todo/main');
   }
 
   /**
@@ -94,7 +110,7 @@ class Controller_Todo extends Controller
     $insert_parameter = $this->recieve_correct_post_data();
     $insert_parameter += ['user_id' => $this->user];
 
-    (new Model_Todo())
+    $this->model_todo
       ->insert_task($insert_parameter);
 
     return Response::redirect('todo/main');
@@ -109,7 +125,7 @@ class Controller_Todo extends Controller
     $id = $update_parameter['id'];
     unset($update_parameter['id']);
 
-    (new Model_Task($id))
+    (new Model_Task($id, $this->user))
       ->update_query($update_parameter)
       ->execute();
 
@@ -123,7 +139,7 @@ class Controller_Todo extends Controller
   {
     $delete_parameter = Input::all();
 
-    (new Model_Task($delete_parameter['id']))
+    (new Model_Task($delete_parameter['id'], $this->user))
       ->delete_query()
       ->execute();
 
