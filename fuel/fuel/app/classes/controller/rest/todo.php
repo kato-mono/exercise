@@ -65,8 +65,13 @@ class Controller_Rest_Todo extends Controller_Rest
     $insert_parameter = $this->recieve_correct_post_data();
     $insert_parameter += ['user_id' => $this->user];
 
-    $this->model_todo
+    $result = $this->model_todo
       ->insert_task($insert_parameter);
+
+    $result[0] = 'id:'.$result[0];
+    $result[1] = $result[1].' inserted.';
+
+    return new Response(json_encode($result));
   }
 
   /**
@@ -78,9 +83,11 @@ class Controller_Rest_Todo extends Controller_Rest
     $id = $update_parameter['id'];
     unset($update_parameter['id']);
 
-    (new Model_Task($id, $this->user))
+    $result = (new Model_Task($id, $this->user))
       ->update_query($update_parameter)
       ->execute();
+
+    return new Response(json_encode($result.' updated.'));
   }
 
   /**
@@ -90,9 +97,11 @@ class Controller_Rest_Todo extends Controller_Rest
   {
     $delete_parameter = Input::all();
 
-    (new Model_Task($delete_parameter['id'], $this->user))
+    $result = (new Model_Task($delete_parameter['id'], $this->user))
       ->delete_query()
       ->execute();
+
+    return new Response(json_encode($result.' deleted.'));
   }
 
   /**

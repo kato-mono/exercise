@@ -12,18 +12,18 @@ class Model_Task extends Model_Todo {
   // $set_valueに入力される連想配列のキーはDB上のカラム名とする
   public function update_query($set_value)
   {
-    $query = DB::update($this->from)
+    $result = DB::update($this->from)
       ->set($set_value)
       ->where('id', $this->id)
       ->and_where('user_id', $this->user_id);
-    return $query;
+    return $result;
   }
 
   public function delete_query()
   {
-    $query = DB::delete($this->from)
+    $result = DB::delete($this->from)
       ->where('id', $this->id)
       ->and_where('user_id', $this->user_id);
-    return $query;
+    return $result;
   }
 }
