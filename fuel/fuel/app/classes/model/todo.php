@@ -61,9 +61,11 @@ class Model_Todo extends \Model {
 
   public function insert_task($insert_value)
   {
-    $query = DB::insert($this->from)
+    $result = DB::insert($this->from)
       ->set($insert_value)
       ->execute();
+
+    return $result;
   }
 
   private function select_query()
