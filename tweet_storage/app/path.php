@@ -1,9 +1,12 @@
 <?php
 
+namespace Monosense\Exercise;
+
 class Path
 {
     const VENDOR_AUTOLOAD = '/var/www/html/public/tweet_storage/vendor/autoload.php';
-    const APP_FILE_UTIL = '/var/www/html/public/tweet_storage/app/file_util.php';
+    const APP_FILE_UTIL = '/var/www/html/public/tweet_storage/app/FileUtil.php';
+    const APP_TWITTER_MEDIATOR = '/var/www/html/public/tweet_storage/app/TwitterMediator.php';
 
     // config
     const CONFIG_TWITTER_CONNECTION = '/var/www/html/public/tweet_storage/config/twitter/connection.json';
