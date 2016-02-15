@@ -1,11 +1,15 @@
 <?php
 
-class File_Util
+namespace Monosense\Exercise;
+
+class FileUtil
 {
     /**
-     * json形式で書かれたconfigを読み込む
+     * json形式で書かれたconfigを配列に変換して返す.
+     *
+     * @return array
      */
-    public static function load_json_config($file_path)
+    public static function loadJsonConfig($file_path)
     {
         $json = file_get_contents($file_path);
         $json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
