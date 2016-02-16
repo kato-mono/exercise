@@ -12,8 +12,9 @@ class TwitterMediator
     private $api_key;
     private $api_secret;
     private $bearer_token;
+    private $screen_name;
 
-    public function __construct()
+    public function __construct($user_name)
     {
         $twitter_configs_file_path = Path::CONFIG_TWITTER_CONNECTION;
         $twitter_configs = FileUtil::loadJsonConfig($twitter_configs_file_path);
@@ -21,6 +22,7 @@ class TwitterMediator
         // (api_key, api_secret)、別名(consumer_key, consumer_secret)
         $this->api_key = $twitter_configs['consumer_key'];
         $this->api_secret = $twitter_configs['consumer_secret'];
+        $this->screen_name = $user_name;
 
         $this->fetchTwitterBearerToken();
     }
@@ -35,7 +37,7 @@ class TwitterMediator
         $request_url = Path::URL_TWITTER_FETCH_TIMELINE;
 
         $fetch_condition = [
-            'screen_name' => '@ka_ko_mo_no',
+            'screen_name' => $this->screen_name,
             'count' => 10,
             'trim_user' => true,
         ];

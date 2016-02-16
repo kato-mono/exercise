@@ -12,14 +12,18 @@
         require_once './TwitterMediator.php';
         require_once './S3Mediator.php';
 
-        $latest_10_tweets = (new Monosense\Exercise\TwitterMediator())->fetch10Tweets();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $_SESSION['id'] = $_POST['id'];
+        }
+
+        $latest_10_tweets = (new Monosense\Exercise\TwitterMediator($_SESSION['id']))->fetch10Tweets();
         $latest_10_tweets_array = array_reverse(json_decode($latest_10_tweets, true));
 
         foreach ($latest_10_tweets_array as $value) {
             echo '<li>'.$value['text'].'</li>';
         }
 
-        $s3_mediator = (new Monosense\Exercise\S3Mediator());
+        $s3_mediator = (new Monosense\Exercise\S3Mediator($_SESSION['id']));
         $s3_mediator->storeLatestTimeline();
 
     ?>

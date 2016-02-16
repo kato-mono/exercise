@@ -16,10 +16,13 @@ class S3Mediator
     private $bucket;
     private $store_directory; // スラッシュを含んだディレクトリ名「directory_name/」
 
+    // twitter connection settings
+    private $screen_name;
+
     const S3_FOLDER_DELIMITER = '/';
     const FILE_EXTENTION = '.json';
 
-    public function __construct()
+    public function __construct($user_name)
     {
         $aws_configs_file_path = Path::CONFIG_AWS_CONNECTION;
         $aws_configs = FileUtil::loadJsonConfig($aws_configs_file_path);
@@ -32,8 +35,12 @@ class S3Mediator
             ]
         );
 
+        $this->screen_name = $user_name;
+
         $this->bucket = $aws_configs['bucket'];
         $this->store_directory = $aws_configs['store_directory_name']
+            .self::S3_FOLDER_DELIMITER
+            .$this->screen_name
             .self::S3_FOLDER_DELIMITER;
     }
 
@@ -109,7 +116,7 @@ class S3Mediator
     public function storeLatestTimeline()
     {
         // twitter上の最新ツイート10件
-        $latest_10_tweets = (new TwitterMediator())->fetch10Tweets();
+        $latest_10_tweets = (new TwitterMediator($this->screen_name))->fetch10Tweets();
 
         // S3上にファイルが１つも存在しなければ最新ツイート10件からファイルを作成する
         if (count($this->listFileName()) == 0) {
