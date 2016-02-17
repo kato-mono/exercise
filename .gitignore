@@ -1,0 +1,6 @@
+tweet_storage/vendor
+tweet_storage/config/aws/connection.json
+tweet_storage/config/twitter/connection.json
+tweet_storage/composer.phar
+
+sandbox
